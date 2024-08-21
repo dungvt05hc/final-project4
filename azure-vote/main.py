@@ -13,7 +13,7 @@ from opencensus.trace import config_integration
 from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.trace.propagation.trace_context_http_header_format import TraceContextPropagator
-from opencensus.trace.ext.flask.flask_middleware import FlaskMiddleware
+# from opencensus.trace.ext.flask.flask_middleware import FlaskMiddleware
 
 # App Insights
 # TODO: Import required libraries for App Insights
@@ -35,12 +35,12 @@ tracer = Tracer(exporter=AzureExporter(connection_string='InstrumentationKey={IN
 app = Flask(__name__)
 
 # Requests Middleware
-middleware = FlaskMiddleware(
-    app,
-    exporter=AzureExporter(connection_string='InstrumentationKey={INSTRUMENTATION_KEY}'),
-    propagator=TraceContextPropagator(),
-    sampler=ProbabilitySampler(1.0),
-)
+# middleware = FlaskMiddleware(
+#     app,
+#     exporter=AzureExporter(connection_string='InstrumentationKey={INSTRUMENTATION_KEY}'),
+#     propagator=TraceContextPropagator(),
+#     sampler=ProbabilitySampler(1.0),
+# )
 
 # Load configurations from environment or config file
 app.config.from_pyfile('config_file.cfg')
