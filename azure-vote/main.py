@@ -96,11 +96,11 @@ def index():
             r.set(button2, 0)
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
-            logger.info('Cat vote reset', extra=properties)  # Log cat vote
+            logger.info('Cats Vote', extra=properties)  # Log cat vote
 
             vote2 = r.get(button2).decode('utf-8')
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
-            logger.info('Dog vote reset', extra=properties)  # Log dog vote
+            logger.info('Dogs Vote', extra=properties)  # Log dog vote
 
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
@@ -112,19 +112,6 @@ def index():
             # Get current values
             vote1 = r.get(button1).decode('utf-8')
             vote2 = r.get(button2).decode('utf-8')
-
-            # Log the vote increment and send a custom event
-            properties = {'custom_dimensions': {f'{vote} Vote': r.get(vote).decode('utf-8')}}
-            logger.info(f'{vote} vote incremented', extra=properties)
-
-            if vote == button1:
-                logger.info("Cat vote cast", extra={'custom_dimensions': {'vote': 'cats'}})
-            elif vote == button2:
-                logger.info("Dog vote cast", extra={'custom_dimensions': {'vote': 'dogs'}})
-
-            # Trace the vote
-            with tracer.span(name=f"Vote {vote}"):
-                pass  # Just creating the span context
 
             # Return results
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
