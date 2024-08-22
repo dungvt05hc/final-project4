@@ -1,0 +1,27 @@
+az acr create --resource-group rg-project4 --name acrfinalproj4 --sku Basic
+
+az acr login --name acrfinalproj4
+
+az acr show --name acrfinalproj4 --query loginServer --output table
+
+docker tag azure-vote-front:v1 acrfinalproj4.azurecr.io/azure-vote-front:v1
+
+docker push acrfinalproj4.azurecr.io/azure-vote-front:v1
+
+az acr repository list --name acrfinalproj4 --output table
+
+az aks update -n udacity-cluster -g rg-project4 --attach-acr acrfinalproj4
+
+az acr show --name acrfinalproj4 --query loginServer --output table
+
+## Deploy the images to the AKS cluster:
+   kubectl apply -f azure-vote-all-in-one-redis.yaml
+   kubectl set image deployment azure-vote-front azure-vote-front=acrfinalproj4.azurecr.io/azure-vote-front:v1
+   # Test the application at the External IP
+   # It will take a few minutes to come alive. 
+   kubectl get service
+   # Check the status of each node
+   kubectl get pods
+
+
+az role assignment create --assignee msi --scope $(az acr show --name acrfinalproj4 --query id --output tsv) --role AcrPull
