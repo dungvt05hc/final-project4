@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Variables
-resourceGroup="acdnd-c4-project"
+resourceGroup="rg-project4"
 clusterName="udacity-cluster"
 
 # Install aks cli
 echo "Installing AKS CLI"
 
-sudo az aks install-cli
+# sudo az aks install-cli
 
 echo "AKS CLI installed"
 
@@ -20,15 +20,17 @@ az aks create \
 --resource-group $resourceGroup \
 --name $clusterName \
 --node-count 1 \
+--location westus \
+--node-vm-size Standard_DS2_v2 \
 --enable-addons monitoring \
 --generate-ssh-keys
 
 # For Cloud Lab users
-az aks create \
---resource-group $resourceGroup \
---name $clusterName \
---node-count 1 \
---generate-ssh-keys
+# az aks create \
+# --resource-group $resourceGroup \
+# --name $clusterName \
+# --node-count 1 \
+# --generate-ssh-keys
 
 # For Cloud Lab users
 # This command will is a substitute for "--enable-addons monitoring" option in the "az aks create"
