@@ -16,7 +16,7 @@ from opencensus.trace.propagation.trace_context_http_header_format import TraceC
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
 # App Insights
-INSTRUMENTATION_KEY = '7849fd59-90e3-48aa-9ea9-ebd86837947e'
+INSTRUMENTATION_KEY = '0d47ba2f-7956-427e-a793-a608d8317ff8'
 
 # Logging
 logger = logging.getLogger(__name__)
