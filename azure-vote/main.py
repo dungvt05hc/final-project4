@@ -118,6 +118,6 @@ def index():
 
 if __name__ == "__main__":
     # Use the statement below when running locally
-    app.run() 
+    # app.run() 
     # Use the statement below before deployment to VMSS
-    # app.run(host='0.0.0.0', threaded=True, debug=True) # remote
+    app.run(host='0.0.0.0', threaded=True, debug=True) # remote
