@@ -2,7 +2,7 @@
 
 # Variables
 resourceGroup="rg-project4"
-location="southeastasia"
+location="westus"
 osType="Ubuntu2204"
 vmssName="udacity-vmss"
 adminName="udacityadmin"
