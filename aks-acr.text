@@ -10,7 +10,7 @@ docker push acrfinalproj4.azurecr.io/azure-vote-front:v1
 
 az acr repository list --name acrfinalproj4 --output table
 
-az aks update -n udacity-cluster -g rg-project4 --attach-acr acrfinalproj4
+az aks update -n udacity-cluster3 -g rg-project4 --attach-acr acrfinalproj4
 
 az acr show --name acrfinalproj4 --query loginServer --output table
 
@@ -25,3 +25,53 @@ az acr show --name acrfinalproj4 --query loginServer --output table
 
 
 az role assignment create --assignee msi --scope $(az acr show --name acrfinalproj4 --query id --output tsv) --role AcrPull
+
+
+docker inspect acrfinalproj4.azurecr.io/azure-vote-front:v2 | grep Architecture
+
+docker inspect azure-vote-front:v1 | grep Architecture
+
+docker build --platform linux/amd64 -t acrfinalproj4.azurecr.io/azure-vote-front:v2 .
+
+docker pull --platform linux/amd64 acrfinalproj4.azurecr.io/azure-vote-front:v2
+
+kubectl describe node aks-nodepool1-26489945-vmss000000 | grep Architecture
+
+az monitor vm-insights enable \
+--resource-group rg-project4 \
+--vmss-name udacity-vmss \
+--workspace "/subscriptions/84a91a22-ffb1-40bb-ac4a-1e5c884f75a5/resourceGroups/DefaultResourceGroup-EUS/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-84a91a22-ffb1-40bb-ac4a-1e5c884f75a5-EUS"
+
+az vmss extension set \
+  --resource-group rg-project4 \
+  --vmss-name udacity-vmss \
+  --name OmsAgentForLinux \
+  --publisher Microsoft.EnterpriseCloud.Monitoring \
+  --settings '{ "workspaceId": "06888f32-0129-4286-935a-705e5c5a77a4" }'
+
+  az vmss extension set \
+  --resource-group rg-project4 \
+  --vmss-name udacity-vmss \
+  --name OmsAgentForLinux \
+  --publisher Microsoft.EnterpriseCloud.Monitoring \
+  --settings '{"workspaceId":"06888f32-0129-4286-935a-705e5c5a77a4"}'
+
+  az vmss diagnostics set \
+  --resource-group rg-project4 \
+  --vmss-name udacity-vmss \
+  --settings "storageAccount": "udacitydiag29898", "workspaceId": "06888f32-0129-4286-935a-705e5c5a77a4" \
+  --protected-settings "workspaceKey": "Hhn919SWdEWZhzuVPcRejCLZHSd9YjEILfq6LHZlUak1ErwrhMSzjFtqXeksW+grnQYrSVea1TwX5UXoTdXt3Q=="
+  
+  az monitor log-analytics workspace get-shared-keys \
+  --resource-group defaultresourcegroup-wus \
+  --workspace-name DefaultWorkspace-84a91a22-ffb1-40bb-ac4a-1e5c884f75a5-WUS \
+  --query primarySharedKey --output tsv
+
+  az vmss diagnostic set \
+  --resource-group lolo \
+  --vmss-name vmms-e2 \
+  --settings <path-to-public-config-json> \
+  --protected-settings <path-to-private-config-json>
+
+
+

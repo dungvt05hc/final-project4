@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Variables
-resourceGroup="rg-project4"
-location="westus"
+resourceGroup="rg-project4-test"
+location="eastus"
 osType="Ubuntu2204"
-vmssName="udacity-vmss"
+vmssName="udacity-vmss2"
 adminName="udacityadmin"
 storageAccount="udacitydiag$RANDOM"
 bePoolName="$vmssName-bepool"
@@ -14,7 +14,7 @@ nsgName="$vmssName-nsg"
 vnetName="$vmssName-vnet"
 subnetName="$vnetName-subnet"
 probeName="tcpProbe"
-vmSize="Standard_B1s"
+vmSize="Standard_B2pts_v2"
 storageType="Standard_LRS"
 
 # Create resource group. 
@@ -69,6 +69,7 @@ az vmss create \
   --upgrade-policy-mode automatic \
   --admin-username $adminName \
   --generate-ssh-keys \
+  --orchestration-mode Uniform \
   --verbose 
 
 echo "VM scale set created: $vmssName"
