@@ -1,0 +1,36 @@
+# Set variables
+$ResourceGroupName = 'rg-project4'
+$VMSSName = 'udacity-vmss'
+$CpuThreshold = 15
+
+# Connect to Azure with system-assigned managed identity
+Connect-AzAccount -Identity
+$azContext = Get-AzContext
+if (-not $azContext) {
+    throw "Azure context not found. Please authenticate using Connect-AzAccount."
+}
+
+# Adjust TimeGrain to use a TimeSpan object
+$timeGrain = [System.TimeSpan]::FromMinutes(1)
+
+# Define the specific time for which you want to retrieve the CPU utilization
+$targetTime = Get-Date "2024-08-30T13:27:00Z"
+$startTime = $targetTime.AddMinutes(-5)
+$endTime = $targetTime.AddMinutes(5)
+
+#$metrics = Get-AzMetric -ResourceId "/subscriptions/$($azContext.Subscription.Id)/resourceGroups/$ResourceGroupName/providers/Microsoft.Compute/virtualMachineScaleSets/$VMSSName" -MetricNames "Percentage CPU" -TimeGrain $timeGrain -StartTime (Get-Date).AddMinutes(-30) -EndTime (Get-Date)
+$metrics = Get-AzMetric -ResourceId "/subscriptions/$($azContext.Subscription.Id)/resourceGroups/$ResourceGroupName/providers/Microsoft.Compute/virtualMachineScaleSets/$VMSSName" -MetricNames "Percentage CPU" -TimeGrain $timeGrain -StartTime $startTime -EndTime $endTime
+Write-Output "metrics: $metrics"
+$averageCpu = ($metrics.Data.Average -replace '%','') -as [double]
+
+Write-Output "Average CPU utilization: $averageCpu%"
+
+if ($averageCpu -gt $CpuThreshold) {
+    # Scale out VMSS
+    $vmss = Get-AzVmss -ResourceGroupName $ResourceGroupName -VMScaleSetName $VMSSName
+    $newCapacity = $vmss.Sku.Capacity + 1
+    Update-AzVmss -ResourceGroupName $ResourceGroupName -VMScaleSetName $VMSSName -SkuCapacity $newCapacity
+    Write-Output "Scaled out VMSS to $newCapacity instances due to CPU utilization of $averageCpu%."
+} else {
+    Write-Output "CPU utilization is within acceptable limits: $averageCpu%."
+}
