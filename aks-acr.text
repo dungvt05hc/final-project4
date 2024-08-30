@@ -10,7 +10,7 @@ docker push acrfinalproj4.azurecr.io/azure-vote-front:v1
 
 az acr repository list --name acrfinalproj4 --output table
 
-az aks update -n udacity-cluster3 -g rg-project4 --attach-acr acrfinalproj4
+az aks update -n udacity-cluster -g rg-project4 --attach-acr acrfinalproj4
 
 az acr show --name acrfinalproj4 --query loginServer --output table
 

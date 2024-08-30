@@ -2,7 +2,7 @@
 
 # Variables
 resourceGroup="rg-project4"
-clusterName="udacity-cluster3"
+clusterName="udacity-cluster"
 
 # Install aks cli
 echo "Installing AKS CLI"
@@ -46,7 +46,7 @@ echo "Step 2 - Getting AKS credentials"
 
 az aks get-credentials \
 --resource-group rg-project4 \
---name udacity-cluster3 \
+--name udacity-cluster \
 --verbose
 
 echo "Verifying connection to $clusterName"
