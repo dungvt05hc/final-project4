@@ -7,40 +7,54 @@ import sys
 import logging
 from datetime import datetime
 from opencensus.ext.azure.log_exporter import AzureLogHandler
-from opencensus.ext.azure.trace_exporter import AzureExporter
-from opencensus.ext.azure.metrics_exporter import MetricsExporter
+from opencensus.ext.azure.log_exporter import AzureEventHandler
+from opencensus.ext.azure import metrics_exporter
+from opencensus.stats import stats as stats_module
 from opencensus.trace import config_integration
+from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
-from opencensus.trace.propagation.trace_context_http_header_format import TraceContextPropagator
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
+# For metrics
+stats = stats_module.stats
+view_manager = stats.view_manager
 
 # App Insights
-INSTRUMENTATION_KEY = '1c056cd6-d8e0-4ce8-b545-cc09ebd53c8b'
+INSTRUMENTATION_KEY = '1407ca61-284d-4186-b050-71d031b6a20a'
 
 # Logging
+config_integration.trace_integrations(['logging'])
+config_integration.trace_integrations(['requests'])
+# Standard Logging
 logger = logging.getLogger(__name__)
+handler = AzureLogHandler(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}')
+handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
+logger.addHandler(handler)
+# Logging custom Events 
+logger.addHandler(AzureEventHandler(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}'))
+# Set the logging level
 logger.setLevel(logging.INFO)
-logger.addHandler(AzureLogHandler(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}'))
 
 # Metrics
-exporter = MetricsExporter(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}')
+exporter = metrics_exporter.new_metrics_exporter(
+enable_standard_metrics=True,
+connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}')
+view_manager.register_exporter(exporter)
 
 # Tracing
-config_integration.trace_integrations(['logging', 'requests'])
-tracer = Tracer(exporter=AzureExporter(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}'), 
-                sampler=ProbabilitySampler(1.0))
-
+tracer = Tracer(
+ exporter=AzureExporter(
+     connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}'),
+ sampler=ProbabilitySampler(1.0),
+)
 app = Flask(__name__)
 
 # Requests Middleware
 middleware = FlaskMiddleware(
-    app,
-    exporter=AzureExporter(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}'),
-    propagator=TraceContextPropagator(),
-    sampler=ProbabilitySampler(1.0),
+ app,
+ exporter=AzureExporter(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}'),
+ sampler=ProbabilitySampler(rate=1.0)
 )
-
 # Load configurations from environment or config file
 app.config.from_pyfile('config_file.cfg')
 
@@ -91,11 +105,11 @@ def index():
         vote2 = r.get(button2).decode('utf-8')
 
         # Trace votes
-        with tracer.span(name="Cats Vote"):
-            pass  # Just creating the span context
+        with tracer.span(name="Cats Vote") as span:
+            print("Cats Vote")
 
-        with tracer.span(name="Dogs Vote"):
-            pass  # Just creating the span context
+        with tracer.span(name="Dogs Vote") as span:
+            print("Dogs Vote")
 
         # Return index with values
         return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
@@ -122,8 +136,13 @@ def index():
             r.incr(vote, 1)
 
             # Get current values
-            vote1 = r.get(button1).decode('utf-8')
+            vote1 = r.get(button1).decode('utf-8')         
+            properties = {'custom_dimensions': {'Cats Vote': vote1}}
+            logger.info('Cats Vote', extra=properties)
+
             vote2 = r.get(button2).decode('utf-8')
+            properties = {'custom_dimensions': {'Dogs Vote': vote2}}
+            logger.info('Dogs Vote', extra=properties)    
 
             # Return results
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
