@@ -5,11 +5,12 @@
       --name udacity-vmss 
    # The following command will connect you to your VM. 
    # Replace `[public-ip]` with the public-ip address of your VMSS.
-   ssh -p 50002 udacityadmin@13.64.8.150
+   ssh -p 50000 udacityadmin@13.64.227.65
+   ssh -p 50003 udacityadmin@13.64.227.65
 
 # Clone and navigate inside the project repo. 
-   git clone https://github.com/<GITHUB_USERNAME>/nd081-c4-azure-performance-project-starter.git
-   cd nd081-c4-azure-performance-project-starter
+   git clone https://github.com/dungvt05hc/final-project4.git
+   cd final-project4
    # Make sure, you aer in the master branch
    git checkout Deploy_to_VMSS
    # Update sudo
@@ -34,3 +35,17 @@
    # Run the app from the Flask application directory
    cd azure-vote/
    python3 main.py
+
+
+   az vmss diagnostics set \
+  --resource-group rg-project4 \
+  --vmss-name udacity-vmss \
+  --settings <path-to-your-diagnostics-settings.json> \
+  --protected-settings <path-to-your-protected-settings.json>
+
+
+az monitor diagnostic-settings create \
+  --name "MyDiagSetting" \
+  --resource "/subscriptions/84a91a22-ffb1-40bb-ac4a-1e5c884f75a5/resourceGroups/rg-project4/providers/Microsoft.Compute/virtualMachineScaleSets/udacity-vmss" \
+  --metrics '[{"category": "AllMetrics", "enabled": true}]' \
+  --storage-account udacitydiag19103
