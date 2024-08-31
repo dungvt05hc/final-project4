@@ -119,10 +119,6 @@ def index():
             properties = {'custom_dimensions': {event_name: r.get(vote).decode('utf-8')}}
             logger.info(f'{event_name}', extra=properties)
 
-            # Track the custom event in Application Insights
-            telemetry_client = tracer.exporter.client
-            telemetry_client.track_event(event_name, properties)
-
             # Get current values
             vote1 = r.get(button1).decode('utf-8')
             vote2 = r.get(button2).decode('utf-8')
@@ -132,6 +128,6 @@ def index():
 
 if __name__ == "__main__":
     # Use the statement below when running locally
-    # app.run() 
+     app.run() 
     # Use the statement below before deployment to VMSS
-    app.run(host='0.0.0.0', threaded=True, debug=True) # remote
+    #app.run(host='0.0.0.0', threaded=True, debug=True) # remote
