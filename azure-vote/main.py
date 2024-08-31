@@ -8,16 +8,6 @@ import logging
 from datetime import datetime
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.log_exporter import AzureEventHandler
-from opencensus.ext.azure.log_exporter import AzureLogHandler
-from opencensus.ext.azure.trace_exporter import AzureExporter
-from opencensus.ext.azure.metrics_exporter import MetricsExporter
-from opencensus.trace import config_integration
-from opencensus.trace.samplers import ProbabilitySampler
-from opencensus.trace.tracer import Tracer
-from opencensus.trace.propagation.trace_context_http_header_format import TraceContextPropagator
-from opencensus.ext.flask.flask_middleware import FlaskMiddleware
-from opencensus.ext.azure.log_exporter import AzureLogHandler
-from opencensus.ext.azure.log_exporter import AzureEventHandler
 from opencensus.ext.azure import metrics_exporter
 from opencensus.stats import stats as stats_module
 from opencensus.trace import config_integration
@@ -46,8 +36,6 @@ logger.addHandler(AzureEventHandler(connection_string=f'InstrumentationKey={INST
 logger.setLevel(logging.INFO)
 
 # Metrics
-exporter = MetricsExporter(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}')
-# Metrics
 exporter = metrics_exporter.new_metrics_exporter(
 enable_standard_metrics=True,
 connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}')
@@ -64,7 +52,7 @@ app = Flask(__name__)
 # Requests Middleware
 middleware = FlaskMiddleware(
  app,
- exporter=AzureExporter(connection_string="InstrumentationKey=[your-guid]"),
+ exporter=AzureExporter(connection_string=f'InstrumentationKey={INSTRUMENTATION_KEY}'),
  sampler=ProbabilitySampler(rate=1.0)
 )
 # Load configurations from environment or config file
