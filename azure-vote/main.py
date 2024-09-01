@@ -20,7 +20,7 @@ stats = stats_module.stats
 view_manager = stats.view_manager
 
 # App Insights
-INSTRUMENTATION_KEY = '1407ca61-284d-4186-b050-71d031b6a20a'
+INSTRUMENTATION_KEY = 'e3357cea-0d5c-4347-a8c6-12dea93b2536'
 
 # Logging
 config_integration.trace_integrations(['logging'])
