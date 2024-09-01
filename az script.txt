@@ -5,8 +5,8 @@
       --name udacity-vmss 
    # The following command will connect you to your VM. 
    # Replace `[public-ip]` with the public-ip address of your VMSS.
-   ssh -p 50000 udacityadmin@13.64.227.65
-   ssh -p 50003 udacityadmin@13.64.227.65
+   ssh -p 50000 udacityadmin@13.93.177.249
+   ssh -p 50001 udacityadmin@13.93.177.249
 
 # Clone and navigate inside the project repo. 
    git clone https://github.com/dungvt05hc/final-project4.git
@@ -36,16 +36,3 @@
    cd azure-vote/
    python3 main.py
 
-
-   az vmss diagnostics set \
-  --resource-group rg-project4 \
-  --vmss-name udacity-vmss \
-  --settings <path-to-your-diagnostics-settings.json> \
-  --protected-settings <path-to-your-protected-settings.json>
-
-
-az monitor diagnostic-settings create \
-  --name "MyDiagSetting" \
-  --resource "/subscriptions/84a91a22-ffb1-40bb-ac4a-1e5c884f75a5/resourceGroups/rg-project4/providers/Microsoft.Compute/virtualMachineScaleSets/udacity-vmss" \
-  --metrics '[{"category": "AllMetrics", "enabled": true}]' \
-  --storage-account udacitydiag19103
